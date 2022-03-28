@@ -43,7 +43,7 @@ jobs:
       env:
         GREETINGS: 'Hello, .NET developers!' # ${{ secrets.GITHUB_TOKEN }}
       with:
-        dir: './SignalsGenerator_Package/Assets/SignalsGenerator'
+        dir: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator' }}
 
     - name: 'Publish to UPM'
       - uses: actions/setup-node@v1
@@ -53,8 +53,8 @@ jobs:
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          registry: 'http://upm.randhall.net'
-          package: './SignalsGenerator_Package/Assets/SignalsGenerator/package.json'
+          registry: ${{ 'http://upm.randhall.net' }}
+          package: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator/package.json' }}
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v3.4.1
