@@ -54,11 +54,9 @@ jobs:
       run: npm install
     
     - name: 'Push to repo'
-      uses: JS-DevTools/npm-publish@v1
-      with:
-        token: ${{ secrets.NPM_TOKEN }}
-        registry: ${{ 'http://upm.randhall.net' }}
-        package: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator/package.json' }}
+      run: npm publish ./SignalsGenerator_Package/Assets/SignalsGenerator/ --registry http://upm.randhall.net
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v3.4.1
