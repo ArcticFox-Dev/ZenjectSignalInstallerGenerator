@@ -39,7 +39,7 @@ jobs:
       run: dotnet build ./SignalsGenerator_Library/SignalsGenerator.csproj --configuration Release --no-restore
 
     - name: 'Tag Package Manifest'
-      uses: ArcticFox-Dev/UpmManifestTools@main
+      uses: ArcticFox-Dev/UpmManifestTools@develop
       env:
         GREETINGS: 'Hello, .NET developers!' # ${{ secrets.GITHUB_TOKEN }}
       with:
