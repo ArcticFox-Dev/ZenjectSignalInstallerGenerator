@@ -1,0 +1,64 @@
+# The name of the work flow. Badges will use this name
+name: 'Publish Snapshot'
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'The reason for running the workflow'
+        required: true
+        default: 'Manual run'
+
+jobs:
+  analysis:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: 'Print manual run reason'
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      run: |
+        echo 'Reason: ${{ github.event.inputs.reason }}'
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: 6.0.x
+ 
+    - name: Restore
+      run: dotnet restore ./SignalsGenerator_Library/
+ 
+    - name: Build
+      run: dotnet build ./SignalsGenerator_Library/SignalsGenerator.csproj --configuration Release --no-restore
+
+    - name: 'Tag Package Manifest'
+      uses: ArcticFox-Dev/UpmManifestTools@main
+      env:
+        GREETINGS: 'Hello, .NET developers!' # ${{ secrets.GITHUB_TOKEN }}
+      with:
+        dir: ./SignalsGenerator_Package/Assets/SignalsGenerator
+
+    - name: 'Publish to UPM'
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - run: npm install
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          registry: http://upm.randhall.net
+          package: ./SignalsGenerator_Package/Assets/SignalsGenerator/package.json
+
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v3.4.1
+      with:
+        title: 'TestMR'
+        body: 'TestMR'
+        commit-message: 'PublishMergeRequest'
