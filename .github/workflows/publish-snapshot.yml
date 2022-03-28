@@ -46,19 +46,19 @@ jobs:
         dir: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator' }}
 
     - name: 'Publish to UPM'
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10
     
     - name: 'Node Install'
-        run: npm install
+      run: npm install
     
     - name: 'Push to repo'
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          registry: ${{ 'http://upm.randhall.net' }}
-          package: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator/package.json' }}
+      uses: JS-DevTools/npm-publish@v1
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
+        registry: ${{ 'http://upm.randhall.net' }}
+        package: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator/package.json' }}
 
     - name: Create pull request
       uses: peter-evans/create-pull-request@v3.4.1
