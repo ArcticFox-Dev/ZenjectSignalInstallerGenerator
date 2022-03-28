@@ -46,11 +46,15 @@ jobs:
         dir: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator' }}
 
     - name: 'Publish to UPM'
-      - uses: actions/setup-node@v1
+        uses: actions/setup-node@v1
         with:
           node-version: 10
-      - run: npm install
-      - uses: JS-DevTools/npm-publish@v1
+    
+    - name: 'Node Install'
+        run: npm install
+    
+    - name: 'Push to repo'
+        uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
           registry: ${{ 'http://upm.randhall.net' }}
