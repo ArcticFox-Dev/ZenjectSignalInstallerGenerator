@@ -7,7 +7,7 @@ on:
       - 'develop' 
 
 jobs:
-  analysis:
+  publish-snapshot:
 
     runs-on: ubuntu-latest
     permissions:
