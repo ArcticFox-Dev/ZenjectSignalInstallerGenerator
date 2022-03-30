@@ -1,0 +1,93 @@
+name: 'Publish Release'
+
+on:
+  push:
+    branches:
+      - 'release/*' 
+
+jobs:
+  Publish-And-Merge:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+      
+    - name: Extract release name
+      shell: bash
+      run: echo "##[set-output name=releaseName;]$(echo ${GITHUB_REF#refs/heads/release/})"
+      id: extract_release
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: 6.0.x
+ 
+    - name: Restore
+      run: dotnet restore ./SignalsGenerator_Library/
+ 
+    - name: Build
+      run: dotnet build ./SignalsGenerator_Library/SignalsGenerator.csproj --configuration Release --no-restore
+
+    name: Tag Package Manifest
+      uses: ArcticFox-Dev/UpmManifestTools@develop
+      with:
+        dir: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator' }}
+        action: ${{ steps.extract_release.outputs.releaseName }}
+
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10
+    
+    - name: Node Install
+      run: npm install
+    
+    - name: Push to UPM registry
+      uses: JS-DevTools/npm-publish@v1
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
+        registry: ${{ 'http://upm.randhall.net' }}
+        package: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator/package.json' }}
+
+    - name: Commit package change
+      uses: EndBug/add-and-commit@v9
+      with:
+        add: './Package/package.json'
+        message: 'Bumping patch version'
+        committer_name: 'Publish-And-Merge Action'
+
+    - name: Push Changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
+    - name: Merge to Main
+      uses: devmasx/merge-branch@master
+      with:
+        type: now
+        from_branch: ${{ steps.extract_branch.outputs.branch }}
+        target_branch: main
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Merge to Develop
+      uses: devmasx/merge-branch@master
+      with:
+        type: now
+        from_branch: ${{ steps.extract_branch.outputs.branch }}
+        target_branch: develop
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Delete Release Branch
+      uses: dawidd6/action-delete-branch@v3
+      with:
+        branches: ${{ steps.extract_branch.outputs.branch }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
