@@ -36,7 +36,7 @@ jobs:
     - name: Build
       run: dotnet build ./SignalsGenerator_Library/SignalsGenerator.csproj --configuration Release --no-restore
 
-    name: Tag Package Manifest
+    - name: Tag Package Manifest
       uses: ArcticFox-Dev/UpmManifestTools@develop
       with:
         dir: ${{ './SignalsGenerator_Package/Assets/SignalsGenerator' }}
