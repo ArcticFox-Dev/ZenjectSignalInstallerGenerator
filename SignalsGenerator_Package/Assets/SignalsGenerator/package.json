@@ -1,6 +1,6 @@
 {
   "name": "com.arcticfox.signalsgenerator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "unity": "2021.2",
   "displayName": "ZenjectSignalsGenerator",
   "description": "A RoslynGenerator library generating a utility class to help with managing and installing Signals with Zenject.",
